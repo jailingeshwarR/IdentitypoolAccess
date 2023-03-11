@@ -1,0 +1,55 @@
+Resources:
+  # UserPool:
+  #   Type: AWS::Cognito::UserPool
+  #   Properties:
+  #     UserPoolName: integeration-service-${sls:stage}
+  #     Schema:
+  #       - Name: email
+  #         Required: true
+  #         Mutable: true
+  #       - Name: name
+  #         Required: true
+  #         Mutable: true          
+  #     AutoVerifiedAttributes: [email]
+  #     Policies:
+  #       PasswordPolicy:
+  #         MinimumLength: 9
+  #         RequireLowercase: true
+  #         RequireNumbers: true
+  #         RequireUppercase: true
+
+  # UserClient:
+  #   Type: AWS::Cognito::UserPoolClient
+  #   Properties:
+  #     ClientName: ResumeBuilder-${sls:stage}-client
+  #     GenerateSecret: false
+  #     UserPoolId: { Ref: UserPool }
+  #     AccessTokenValidity: 5
+  #     IdTokenValidity: 5
+  #     ExplicitAuthFlows:
+
+  CognitoIdentityPool:
+    Type: AWS::Cognito::IdentityPool
+    Properties:
+      IdentityPoolName: EF-${sls:stage}-identityPool
+      AllowUnauthenticatedIdentities: true
+      # CognitoIdentityProviders:
+      #   - ClientId: !Ref UserClient
+      #     ProviderName: !GetAtt UserPool.ProviderName
+
+  CognitoIdentityPoolRoleAttachment:
+    Type: AWS::Cognito::IdentityPoolRoleAttachment
+    Properties:
+      IdentityPoolId: 
+        Ref: CognitoIdentityPool
+      Roles:
+        unauthenticated: !GetAtt CognitoUnAuthRole.Arn
+        # authenticated: arn:aws:iam::${aws:accountId}:role/cognitoAuthRole-${sls:stage}
+
+  # CognitoUserPoolDomain:
+  #   Type: AWS::Cognito::UserPoolDomain
+  #   Properties:
+  #     Domain: EF-marketing${sls:stage}
+  #     UserPoolId: !Ref UserPool
+
+    
